@@ -57,10 +57,9 @@ function showGame() {
 function showQuestion() {
   let question = questions[currentQuestion];
   document.getElementById("question").innerHTML = question["question"];
-  document.getElementById("answer_1").innerHTML = question["answer_1"];
-  document.getElementById("answer_2").innerHTML = question["answer_2"];
-  document.getElementById("answer_3").innerHTML = question["answer_3"];
-  document.getElementById("answer_4").innerHTML = question["answer_4"];
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("answer_" + i).innerHTML = question["answer_" + i];
+  }
   document.getElementById("question-number").innerHTML = currentQuestion + 1;
   document.getElementById("question-total").innerHTML = questions.length;
 }
