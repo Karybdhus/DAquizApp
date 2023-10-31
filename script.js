@@ -56,32 +56,40 @@ function showGame() {
 
 function showQuestion() {
   let question = questions[currentQuestion];
+  questionCounter();
   document.getElementById("question").innerHTML = question["question"];
   for (let i = 1; i <= 4; i++) {
     document.getElementById("answer_" + i).innerHTML = question["answer_" + i];
   }
+}
+
+function questionCounter() {
   document.getElementById("question-number").innerHTML = currentQuestion + 1;
   document.getElementById("question-total").innerHTML = questions.length;
 }
 
 function answer(answer_number) {
-  let correctAnswer = questions[currentQuestion]["correct_answer"];
   if (!quizLocked) {
     quizLocked = true;
     document.getElementById("next-question-btn").disabled = false;
-    if (answer_number === correctAnswer) {
-      score++;
-      document
-        .getElementById("answer_" + answer_number)
-        .parentNode.classList.add("bg-success");
-    } else {
-      document
-        .getElementById("answer_" + answer_number)
-        .parentNode.classList.add("bg-danger");
-      document
-        .getElementById("answer_" + correctAnswer)
-        .parentNode.classList.add("bg-success");
-    }
+    checkAnswer(answer_number);
+  }
+}
+
+function checkAnswer(answer_number) {
+  let correctAnswer = questions[currentQuestion]["correct_answer"];
+  if (answer_number == correctAnswer) {
+    score++;
+    document
+      .getElementById("answer_" + answer_number)
+      .parentNode.classList.add("bg-success");
+  } else {
+    document
+      .getElementById("answer_" + answer_number)
+      .parentNode.classList.add("bg-danger");
+    document
+      .getElementById("answer_" + correctAnswer)
+      .parentNode.classList.add("bg-success");
   }
 }
 
@@ -90,18 +98,8 @@ function nextQuestion() {
   document.getElementById("next-question-btn").disabled = true;
   removeLastAnswer();
   currentQuestion++;
+  updateProgressbar();
   showNextQuestion();
-}
-
-function showNextQuestion() {
-  if (currentQuestion < questions.length) {
-    showQuestion();
-    if (currentQuestion == questions.length - 1) {
-      document.getElementById("next-question-btn").innerHTML = "Endergebnis";
-    }
-  } else {
-    showScore();
-  }
 }
 
 function removeLastAnswer() {
@@ -112,6 +110,37 @@ function removeLastAnswer() {
   }
 }
 
+function updateProgressbar() {
+  let percent = Math.round((currentQuestion / questions.length) * 100);
+
+  if (percent == 1) {
+    document.getElementById("progress-bar").innerHTML = `0%`;
+    document.getElementById("progress-bar").style.width = `0%`;
+  } else {
+    document.getElementById("progress-bar").innerHTML = `${percent}%`;
+    document.getElementById("progress-bar").style.width = `${percent}%`;
+  }
+}
+
+function showNextQuestion() {
+  if (!gameOver()) {
+    showQuestion();
+    if (lastQuestion()) {
+      document.getElementById("next-question-btn").innerHTML = "Endergebnis";
+    }
+  } else {
+    showScore();
+  }
+}
+
+function gameOver() {
+  return currentQuestion >= questions.length;
+}
+
+function lastQuestion() {
+  return currentQuestion == questions.length - 1;
+}
+
 function showScore() {
   document.getElementById("question-card").innerHTML = showScorePage(score);
 }
@@ -119,5 +148,6 @@ function showScore() {
 function resetQuiz() {
   currentQuestion = 0;
   score = 0;
+  updateProgressbar();
   showGame();
 }
